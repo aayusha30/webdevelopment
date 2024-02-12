@@ -1,1 +1,188 @@
-Library manage
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management</title>
+    <style>
+        body {
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        h1 {
+            text-align: center;
+            color: #000000;
+        }
+
+        .form, .search {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"], input[type="number"], button {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #61cf64;
+            box-shadow: 0 0 5px rgba(97, 207, 100, 0.5);
+        }
+
+        button {
+            background-color: #61cf64;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        button:hover {
+            background-color: #317a34;
+        }
+
+        #bookList {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .book {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #eee;
+            background-color: #f9f9f9;
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        .book:hover {
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        @media only screen and (max-width: 600px) {
+            .container {
+                max-width: 100%;
+            }
+        }
+
+        #loading {
+            display: none;
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Library Management System</h1>
+        <div class="form">
+            <input type="text" id="title" placeholder="Title">
+            <input type="text" id="author" placeholder="Author">
+            <input type="number" id="pages" placeholder="Pages">
+            <input type="text" id="genre" placeholder="Genre">
+            <button onclick="addBook()">Add Book</button>
+        </div>
+        <div class="search">
+            <input type="text" id="searchTitle" placeholder="Search by Title">
+            <button onclick="searchBooks()">Search</button>
+        </div>
+        <div id="loading"></div>
+        <div id="bookList"></div>
+    </div>
+
+    <script>
+        let library = [];
+
+        function addBook() {
+            let title = document.getElementById('title').value;
+            let author = document.getElementById('author').value;
+            let pages = parseInt(document.getElementById('pages').value);
+            let genre = document.getElementById('genre').value;
+
+            if (title && author && pages && genre) {
+                let book = {
+                    title: title,
+                    author: author,
+                    pages: pages,
+                    genre: genre
+                };
+                library.push(book);
+                displayBooks();
+                showLoading(true); // Show loading animation
+                // Clear input fields
+                document.getElementById('title').value = '';
+                document.getElementById('author').value = '';
+                document.getElementById('pages').value = '';
+                document.getElementById('genre').value = '';
+            } else {
+                alert('Please fill in all fields.');
+            }
+        }
+
+        function searchBooks() {
+            let searchTitle = document.getElementById('searchTitle').value.toLowerCase();
+            let searchResult = library.filter(book => book.title.toLowerCase().includes(searchTitle));
+            displayBooks(searchResult);
+        }
+
+        function deleteBook(index) {
+            library.splice(index, 1);
+            displayBooks();
+        }
+
+        function displayBooks(books = library) {
+            showLoading(false); // Hide loading animation
+            let bookList = document.getElementById('bookList');
+            bookList.innerHTML = '';
+
+            books.forEach((book, index) => {
+                let bookDiv = document.createElement('div');
+                bookDiv.classList.add('book');
+                bookDiv.innerHTML = `
+                    <h3>${book.title}</h3>
+                    <p>Author: ${book.author}</p>
+                    <p>Pages: ${book.pages}</p>
+                    <p>Genre: ${book.genre}</p>
+                    <button onclick="deleteBook(${index})">Delete</button>
+                `;
+                bookList.appendChild(bookDiv);
+            });
+        }
+
+        function showLoading(isLoading) {
+            let loadingElement = document.getElementById('loading');
+            if (isLoading) {
+                loadingElement.style.display = 'block';
+            } else {
+                loadingElement.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
